@@ -1,5 +1,6 @@
 const categoryFillIn = ({ name, description }) => {
   if (!name || !description) {
+    // 
     return 'Please enter all fields!';
   }
 
