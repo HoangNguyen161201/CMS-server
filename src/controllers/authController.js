@@ -37,8 +37,7 @@ const authController = {
     //Check password correct
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log('password sai')
-      return res.status(200).json({
+      return res.status(400).json({
         err: 'Incorrect passwrod.',
         statusCode: 400,
       });
