@@ -36,11 +36,13 @@ const authController = {
 
     //Check password correct
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({
+    if (!isMatch) {
+      console.log('password sai')
+      return res.status(200).json({
         err: 'Incorrect passwrod.',
         statusCode: 400,
       });
+    }
 
     //Generate access and refresh token
     const access_token = await createAccessToken({
