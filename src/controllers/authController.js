@@ -19,8 +19,8 @@ const { validatePassword } = require('../utils/userValid');
 const authController = {
   login: catchAsyncError(async (req, res) => {
     //Get email and password login
+    console.log('login ne') 
     const { email, password, role } = req.body;
-
     //Check exist user
     const user = await userModel.findOne({
       email,
