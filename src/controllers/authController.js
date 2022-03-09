@@ -19,14 +19,16 @@ const { validatePassword } = require('../utils/userValid');
 const authController = {
   login: catchAsyncError(async (req, res) => {
     //Get email and password login
-    console.log('login ne') 
     const { email, password, role } = req.body;
+    console.log(email, password)
     //Check exist user
     const user = await userModel.findOne({
       email,
       role,
       deleted: false,
     });
+    console.log(user)
+    console.log('nguyen quang hoanf')
     if (!user)
       return res.status(400).json({
         err: 'This email does not exists.',
