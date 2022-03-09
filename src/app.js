@@ -20,11 +20,9 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     //
-    origin: [`${process.env.URL_CLIENT}`, 'https://cms-server-fxwc.onrender.com/socket.io'],
+    origin: process.env.URL_CLIENT,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204
   },
 });
 
