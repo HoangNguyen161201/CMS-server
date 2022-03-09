@@ -20,15 +20,14 @@ const authController = {
   login: catchAsyncError(async (req, res) => {
     //Get email and password login
     const { email, password, role } = req.body;
-    console.log(email, password)
+
     //Check exist user
     const user = await userModel.findOne({
       email,
       role,
       deleted: false,
     });
-    console.log(user)
-    console.log('nguyen quang hoanf')
+ 
     if (!user)
       return res.status(400).json({
         err: 'This email does not exists.',
@@ -50,6 +49,7 @@ const authController = {
     const refresh_token = await createRefreshToken({
       id: user._id,
     });
+    console.log('success')
 
     return res.status(200).json({
       accessToken: access_token,
