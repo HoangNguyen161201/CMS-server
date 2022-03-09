@@ -23,6 +23,8 @@ const io = new Server(httpServer, {
     origin: [`${process.env.URL_CLIENT}`, 'https://cms-server-fxwc.onrender.com/socket.io'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   },
 });
 
