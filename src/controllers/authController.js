@@ -49,7 +49,6 @@ const authController = {
     const refresh_token = await createRefreshToken({
       id: user._id,
     });
-    console.log('success')
 
     return res.status(200).json({
       accessToken: access_token,
