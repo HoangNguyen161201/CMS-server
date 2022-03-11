@@ -123,7 +123,9 @@ const authController = {
   }),
 
   smtpResetPass: catchAsyncError(async (req, res) => {
+    console.log('nguyen quamh asgn')
     const { email } = req.body;
+    console.log(email)
     const user = await userModel
       .findOne({
         email,

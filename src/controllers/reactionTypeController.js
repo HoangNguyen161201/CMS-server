@@ -8,9 +8,8 @@ const reactionTypeModel = require('../models/reactionTypeModel');
 const reactionTypeController = {
 
   getAll: catchAsyncError(async (req, res) => {
-    console.log('success')
+    console.log('sucgggggcess')
     const reactionTypes = await reactionTypeModel.find({});
-    console.log(reactionTypes)
     return res.status(200).json({
       statusCode: 200,
       msg: `Get all reaction type success.`,
