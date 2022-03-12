@@ -12,6 +12,7 @@ const reactionModel = require('../models/reactionModel');
 const categoryModel = require('../models/categoryModel');
 const pageIndex = require('../utils/PageIndex');
 const { default: mongoose, mongo } = require('mongoose');
+const mailNotice = require('../utils/mailNotice')
 
 const ideaController = {
   create: catchAsyncError(async (req, res) => {
@@ -77,6 +78,17 @@ const ideaController = {
         err: 'The closure timeout date has expired.',
         statusCode: 400,
       });
+
+          // send mail
+    const QACoordinator = await userModel.findOne({ role: 'qa_coordinator', department_id: user.department_id })
+    if (QACoordinator) {
+      await mailNotice({
+        email: QACoordinator.email,
+        subject: `1 staff posted an idea`,
+        text: `${user.email} posted 1 new idea.`,
+        html: '',
+      });
+    }
 
     const NewIdea = new ideaModel({
       title,
