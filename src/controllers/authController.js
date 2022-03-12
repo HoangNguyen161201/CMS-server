@@ -38,7 +38,7 @@ const authController = {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(200).json({
-        err: 'Incorrect passwrod.',
+        err: 'Incorrect password.',
         statusCode: 400,
       });
     }
@@ -123,9 +123,7 @@ const authController = {
   }),
 
   smtpResetPass: catchAsyncError(async (req, res) => {
-    console.log('nguyen quamh asgn')
     const { email } = req.body;
-    console.log(email)
     const user = await userModel
       .findOne({
         email,

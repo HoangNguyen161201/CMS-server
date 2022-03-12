@@ -304,7 +304,6 @@ const userController = {
   updateAvatar: catchAsyncError(async (req, res) => {
     const { user_id } = req.params;
     const { avatar } = req.body;
-    console.log(avatar);
 
     //check user exist in system
     const user = await userModel.findOne({
