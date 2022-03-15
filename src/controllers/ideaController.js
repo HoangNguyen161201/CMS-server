@@ -47,6 +47,7 @@ const ideaController = {
 
     //Check exist user
     const user = await userModel.findById(user_id);
+
     if (!user)
       return res.status(400).json({
         err: 'User does not exist in system.',
@@ -79,7 +80,7 @@ const ideaController = {
         statusCode: 400,
       });
 
-          // send mail
+    // send mail
     const QACoordinator = await userModel.findOne({ role: 'qa_coordinator', department_id: user.department_id })
     if (QACoordinator) {
       await mailNotice({
@@ -202,9 +203,10 @@ const ideaController = {
     });
   }),
 
-  
+
 
   getAll: catchAsyncError(async (req, res) => {
+
     const {
       _sort,
       _sortBy,
@@ -216,27 +218,65 @@ const ideaController = {
       _reaction,
       _search,
       _accept,
+      _getBy,
+      _getValue,
     } = req.query;
 
     if (_interactive || _reaction) {
       const match = () => {
-        if (_reaction) {
-          return {
-            $match: {
-              reactionType_id: _reaction,
-              'idea.accept': true,
-            },
-          };
+        let filter = {
+            reactionType_id: _reaction ? _reaction : { $nin: [''] },
+        }
+        if(_accept) {
+          filter = {
+            ...filter,
+            'idea.accept': true
+          }
+        }
+        if(_getBy && _getValue) {
+          filter = {
+            ...filter,
+            [_getBy]: _getValue
+          }
         }
 
         return {
           $match: {
-            reactionType_id: { $nin: [''] },
-            'idea.accept': true,
-          },
-        };
+            ...filter
+          }
+        }
+        
       };
       const page = await reactionModel.aggregate([
+        {
+          $addFields: { idea_id2: { $toObjectId: '$idea_id' } },
+        },
+        {
+          $lookup: {
+            from: 'ideas',
+            localField: 'idea_id2',
+            foreignField: '_id',
+            as: 'idea',
+          },
+        },
+        {
+          $unwind: {
+            path: '$idea',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $addFields: { person_id: {$toString: '$idea.user_id'}, submission_id: {$toString: '$idea.submission_id"'}},
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'idea.user_id',
+            foreignField: '_id',
+            as: 'idea.user',
+          },
+        },
+
         match(),
         {
           $group: {
@@ -247,6 +287,7 @@ const ideaController = {
           $count: 'totalPage',
         },
       ]);
+      console.log('fgdfgdf',page)
 
       const result = await reactionModel.aggregate([
         {
@@ -265,6 +306,9 @@ const ideaController = {
             path: '$idea',
             preserveNullAndEmptyArrays: true,
           },
+        },
+        {
+          $addFields: { person_id: {$toString: '$idea.user_id'}, submission_id: {$toString: '$idea.submission_id"'}},
         },
         {
           $lookup: {
@@ -286,6 +330,7 @@ const ideaController = {
             totalReaction: -1,
           },
         },
+   
         {
           $skip: Number(_page - 1) * Number(_limit),
         },
@@ -294,13 +339,15 @@ const ideaController = {
         },
       ]);
 
-      const data = result.map((item) => {
+      let data = result.map((item) => {
         return {
           ...item._id,
           totalReaction: item.totalReaction,
           user_id: item._id.user[0],
         };
       });
+
+      
 
       return res.status(200).json({
         statusCode: 200,
@@ -309,30 +356,53 @@ const ideaController = {
         page_Index: page.length == 0 ? 0 : Math.ceil(page[0].totalPage / Number(_limit)),
       });
     }
-    const page_Index = await pageIndex({ query: ideaModel.find({}), limit: _limit });
 
     let filter = new Filter(ideaModel);
+    let countPage = new Filter(ideaModel);
     if (_accept) {
       filter = filter.getAll({
         accept: true,
       });
+      countPage = countPage.getAll({
+        accept: true,
+      });
+      
     } else {
       filter = filter.getAll();
+      countPage = countPage.getAll();
     }
     if (_nameById) {
       filter = filter.searchById({ name: _nameById, value: _valueById });
+      countPage = countPage.searchById({ name: _nameById, value: _valueById });
     }
     if (_search) {
       filter = filter.search({ name: 'title', query: _search });
+      countPage = countPage.search({ name: 'title', query: _search });
     }
     if (_sort) {
       filter = filter.sort({ name: _sortBy, NorO: _sort });
+      countPage = countPage.sort({ name: _sortBy, NorO: _sort });
     }
+    if(_getBy && _getValue) {
+      if(_getBy == 'person_id') {
+        filter = filter.searchById({ name: 'user_id', value: _getValue });
+        countPage = countPage.searchById({ name: 'user_id', value: _getValue });
+      } else {
+        filter = filter.searchById({ name: _getBy, value: _getValue });
+        countPage = countPage.searchById({ name: _getBy, value: _getValue });
+      }
+    }
+
+    // get Count Item
+    const count = await countPage.query.count()
+    const page_Index =  pageIndex({ count, limit: _limit });
+    console.log(page_Index)
     if (_page && _limit) {
       filter = filter.pagination({ page: _page - 1, limit: _limit });
     }
 
-    const data = await filter.query.populate('user_id');
+    let data = await filter.query.populate('user_id');
+
     return res.status(200).json({
       statusCode: 200,
       msg: 'Get All Success',
