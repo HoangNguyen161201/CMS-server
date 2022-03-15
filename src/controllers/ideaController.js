@@ -356,7 +356,6 @@ const ideaController = {
       });
     }
 
-    console.log('di toi success')
     let filter = new Filter(ideaModel);
     let countPage = new Filter(ideaModel);
     if (_accept) {
@@ -396,7 +395,7 @@ const ideaController = {
     // get Count Item
     const count = await countPage.query.count()
     const page_Index = pageIndex({ count, limit: _limit });
-    console.log(page_Index)
+  
     if (_page && _limit) {
       filter = filter.pagination({ page: _page - 1, limit: _limit });
     }
