@@ -225,15 +225,15 @@ const ideaController = {
     if (_interactive || _reaction) {
       const match = () => {
         let filter = {
-            reactionType_id: _reaction ? _reaction : { $nin: [''] },
+          reactionType_id: _reaction ? _reaction : { $nin: [''] },
         }
-        if(_accept) {
+        if (_accept) {
           filter = {
             ...filter,
             'idea.accept': true
           }
         }
-        if(_getBy && _getValue) {
+        if (_getBy && _getValue) {
           filter = {
             ...filter,
             [_getBy]: _getValue
@@ -245,7 +245,7 @@ const ideaController = {
             ...filter
           }
         }
-        
+
       };
       const page = await reactionModel.aggregate([
         {
@@ -266,7 +266,7 @@ const ideaController = {
           },
         },
         {
-          $addFields: { person_id: {$toString: '$idea.user_id'}, submission_id: {$toString: '$idea.submission_id"'}},
+          $addFields: { person_id: { $toString: '$idea.user_id' }, submission_id: { $toString: '$idea.submission_id"' } },
         },
         {
           $lookup: {
@@ -287,7 +287,6 @@ const ideaController = {
           $count: 'totalPage',
         },
       ]);
-      console.log('fgdfgdf',page)
 
       const result = await reactionModel.aggregate([
         {
@@ -308,7 +307,7 @@ const ideaController = {
           },
         },
         {
-          $addFields: { person_id: {$toString: '$idea.user_id'}, submission_id: {$toString: '$idea.submission_id"'}},
+          $addFields: { person_id: { $toString: '$idea.user_id' }, submission_id: { $toString: '$idea.submission_id"' } },
         },
         {
           $lookup: {
@@ -330,7 +329,7 @@ const ideaController = {
             totalReaction: -1,
           },
         },
-   
+
         {
           $skip: Number(_page - 1) * Number(_limit),
         },
@@ -347,7 +346,7 @@ const ideaController = {
         };
       });
 
-      
+
 
       return res.status(200).json({
         statusCode: 200,
@@ -357,6 +356,7 @@ const ideaController = {
       });
     }
 
+    console.log('di toi success')
     let filter = new Filter(ideaModel);
     let countPage = new Filter(ideaModel);
     if (_accept) {
@@ -366,7 +366,7 @@ const ideaController = {
       countPage = countPage.getAll({
         accept: true,
       });
-      
+
     } else {
       filter = filter.getAll();
       countPage = countPage.getAll();
@@ -383,8 +383,8 @@ const ideaController = {
       filter = filter.sort({ name: _sortBy, NorO: _sort });
       countPage = countPage.sort({ name: _sortBy, NorO: _sort });
     }
-    if(_getBy && _getValue) {
-      if(_getBy == 'person_id') {
+    if (_getBy && _getValue) {
+      if (_getBy == 'person_id') {
         filter = filter.searchById({ name: 'user_id', value: _getValue });
         countPage = countPage.searchById({ name: 'user_id', value: _getValue });
       } else {
@@ -395,7 +395,7 @@ const ideaController = {
 
     // get Count Item
     const count = await countPage.query.count()
-    const page_Index =  pageIndex({ count, limit: _limit });
+    const page_Index = pageIndex({ count, limit: _limit });
     console.log(page_Index)
     if (_page && _limit) {
       filter = filter.pagination({ page: _page - 1, limit: _limit });
