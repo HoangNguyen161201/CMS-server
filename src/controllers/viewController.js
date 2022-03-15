@@ -69,6 +69,6 @@ const viewController = {
       msg: 'Delete view by idea success.',
     });
   }),
-};
+}; //
 
 module.exports = viewController;
