@@ -20,6 +20,7 @@ const authController = {
   login: catchAsyncError(async (req, res) => {
     //Get email and password login
     const { email, password, role } = req.body;
+    console.log(email, password, role);
 
     //Check exist user
     const user = await userModel.findOne({
@@ -27,7 +28,6 @@ const authController = {
       role,
       deleted: false,
     });
- 
     if (!user)
       return res.status(400).json({
         err: 'This email does not exists.',
@@ -36,12 +36,11 @@ const authController = {
 
     //Check password correct
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(200).json({
-        err: 'Incorrect password.',
+    if (!isMatch)
+      return res.status(400).json({
+        err: 'Incorrect passwrod.',
         statusCode: 400,
       });
-    }
 
     //Generate access and refresh token
     const access_token = await createAccessToken({

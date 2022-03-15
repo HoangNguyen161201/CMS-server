@@ -483,7 +483,6 @@ const ideaController = {
     });
   }),
 
-  //
   getIdeaAcceptOfUser: catchAsyncError(async (req, res) => {
     const { user_id } = req.params;
 
@@ -527,3 +526,4 @@ const ideaController = {
 };
 
 module.exports = ideaController;
+
