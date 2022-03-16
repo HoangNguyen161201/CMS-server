@@ -220,9 +220,8 @@ const departmentController = {
       .select('-password');
 
     //Get staffs
-    const staffs = await userModel
+    const employees = await userModel
       .find({
-        role: 'staff',
         department_id: department._id,
         deleted: false,
       })
@@ -236,7 +235,7 @@ const departmentController = {
       qa_manager,
       qa_coordinator,
       department_manager,
-      staffs,
+      employees,
     };
 
     return res.status(200).json({
@@ -414,4 +413,3 @@ const departmentController = {
 };
 
 module.exports = departmentController;
-

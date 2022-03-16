@@ -126,7 +126,6 @@ const submissionController = {
     if (_search) {
       filter = filter.search({ name: 'name', query: _search });
     }
-
     if (_time) {
       filter = filter.searchGte({ name: 'closure_date', query: _time });
     }
