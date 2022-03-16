@@ -11,6 +11,7 @@ const reactionTypeRouter = require('./reactionTypeRouter');
 const commentRouter = require('./commentRouter');
 const staticRouter = require('./staticRouter');
 const mailRouter = require('./mailRouter');
+const draftRouter = require('./draftRouter');
 
 //Config main router
 mainRouter = (app) => {
