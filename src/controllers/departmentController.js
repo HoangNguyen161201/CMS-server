@@ -385,6 +385,7 @@ const departmentController = {
       })
       .select('-password');
 
+      
     //Check exist qa_coordinator
     if (qaCoordinator) {
       await departmentModel.findByIdAndUpdate(id, {
