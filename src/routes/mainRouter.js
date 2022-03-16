@@ -37,6 +37,8 @@ mainRouter = (app) => {
   app.use('/api/statics', staticRouter); 
   
   app.use('/api/mails', mailRouter);
+
+  app.use('/api/drafts', draftRouter);
 };
 
 module.exports = mainRouter;
