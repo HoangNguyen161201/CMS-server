@@ -405,6 +405,8 @@ const departmentController = {
       });
     }
 
+
+
     return res.status(200).json({
       msg: `Assign success.`,
       statusCode: 200,
