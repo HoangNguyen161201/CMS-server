@@ -840,7 +840,7 @@ const userController = {
           icon: '🌖'
         },
         {
-          label: 'total interaction',
+          label: 'Total interaction',
           count: countInteraction,
           icon: '🌗'
         },
