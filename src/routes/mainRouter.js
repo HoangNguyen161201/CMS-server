@@ -14,7 +14,7 @@ const mailRouter = require('./mailRouter');
 const draftRouter = require('./draftRouter');
 
 //Config main router
-mainRouter = (app) => {
+const mainRouter = (app) => {
   app.use('/api/auth', authRouter);
 
   app.use('/api/users', userRouter);
