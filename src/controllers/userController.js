@@ -57,7 +57,7 @@ const userController = {
       .limit(1)
       .then((users) => users);
 
-    const employee_id = maxQuery[0] ? maxQuery[0].employee_id + 1 : 1;
+    const employee_id = maxQuery[0] ? maxQuery[0].employee_id : 0;
 
     //Check exist department id
     if (department_id) {
