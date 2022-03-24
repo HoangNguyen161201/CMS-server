@@ -57,7 +57,7 @@ const userController = {
       .limit(1)
       .then((users) => users);
 
-    const employee_id = maxQuery[0] ? (maxQuery[0].employee_id + 1) : 1;
+    const employee_id = maxQuery[0] ? maxQuery[0].employee_id + 1 : 1;
 
     //Check exist department id
     if (department_id) {
@@ -169,12 +169,22 @@ const userController = {
         url: `https://avatars.dicebear.com/api/big-smile/${userItem.name}.svg`,
       };
 
+      //Increment user
+      const maxQuery = await userModel
+        .find({})
+        .sort({ employee_id: -1 })
+        .limit(1)
+        .then((users) => users);
+
+      const employee_id = maxQuery[0] ? maxQuery[0].employee_id + 1 : 1;
+
       const newUser = new userModel({
         name: userItem.name,
         email: userItem.email,
         role: userItem.role,
         password: passwordHash,
         avatar: avatarUser,
+        employee_id
       });
       usersValided.push(newUser);
       userEmails.push(userItem.email);
@@ -571,8 +581,9 @@ const userController = {
       await mailNotice({
         email: user.email,
         subject: `You have been assigned to the department ${department.name}`,
-        text: `You have been assigned to the department ${department.name
-          } at ${new Date().toString()}`,
+        text: `You have been assigned to the department ${
+          department.name
+        } at ${new Date().toString()}`,
         html: '',
       });
 
@@ -634,8 +645,9 @@ const userController = {
         await mailNotice({
           email: user.email,
           subject: `You have been assigned to the department ${department.name}`,
-          text: `You have been assigned to the department ${department.name
-            } at ${new Date().toString()}`,
+          text: `You have been assigned to the department ${
+            department.name
+          } at ${new Date().toString()}`,
           html: '',
         });
       }
@@ -658,7 +670,7 @@ const userController = {
       //Check exist user
       const user = await userModel.findOne({
         _id: userId,
-        deleted: false
+        deleted: false,
       });
       if (!user)
         return res.status(400).json({
@@ -668,7 +680,7 @@ const userController = {
 
       //Check exist department
       if (user.department_id) {
-        const department = await departmentModel.findById(user.department_id)
+        const department = await departmentModel.findById(user.department_id);
         if (!department)
           return res.status(400).json({
             err: `Department not exist in system.`,
@@ -699,12 +711,12 @@ const userController = {
       // check exist users
       const user = await userModel.findOne({
         _id: userId,
-        deleted: false
+        deleted: false,
       });
       if (user) {
         //Check exist department
         if (user.department_id) {
-          const department = await departmentModel.findById(user.department_id)
+          const department = await departmentModel.findById(user.department_id);
           if (!department)
             return res.status(400).json({
               err: `Department not exist in system.`,
@@ -756,22 +768,23 @@ const userController = {
 
   // static user
   staticUser: catchAsyncError(async (req, res) => {
-    const { id } = req.body
-    const user = await userModel.findById(id)
-    if (!user) return res.status(400).json({
-      err: 'The User is does not exist',
-      statusCode: 400,
-    });
-    const countAccepted = await ideaModel.find({ user_id: id, accept: true }).count()
-    const countUnaccepted = await ideaModel.find({ user_id: id, accept: false }).count()
-    const countAnonymously = await ideaModel.find({ user_id: id, anonymously: true }).count()
-    const countNoAnonymously = await ideaModel.find({ user_id: id, anonymously: false }).count()
+    const { id } = req.body;
+    const user = await userModel.findById(id);
+    if (!user)
+      return res.status(400).json({
+        err: 'The User is does not exist',
+        statusCode: 400,
+      });
+    const countAccepted = await ideaModel.find({ user_id: id, accept: true }).count();
+    const countUnaccepted = await ideaModel.find({ user_id: id, accept: false }).count();
+    const countAnonymously = await ideaModel.find({ user_id: id, anonymously: true }).count();
+    const countNoAnonymously = await ideaModel.find({ user_id: id, anonymously: false }).count();
 
-    let totalView = 0
-    const data = await ideaModel.find({ user_id: id })
-    data.map(item => {
-      totalView += item.view
-    })
+    let totalView = 0;
+    const data = await ideaModel.find({ user_id: id });
+    data.map((item) => {
+      totalView += item.view;
+    });
 
     const dataInteraction = await reactionModel.aggregate([
       {
@@ -792,23 +805,22 @@ const userController = {
         },
       },
       {
-        $addFields: { user_id: { $toString: '$idea.user_id' } }
+        $addFields: { user_id: { $toString: '$idea.user_id' } },
       },
       {
         $match: {
-          'user_id': id
-        }
+          user_id: id,
+        },
       },
       {
         $group: {
           _id: '$user_id',
           count: { $sum: 1 },
-        }
-      }
+        },
+      },
+    ]);
 
-    ])
-
-    const countInteraction = dataInteraction[0].count
+    const countInteraction = dataInteraction[0].count;
 
     return res.status(200).json({
       msg: 'get data success.',
@@ -817,38 +829,36 @@ const userController = {
         {
           label: 'Total ideas (Accepted)',
           count: countAccepted,
-          icon: '🌒'
+          icon: '🌒',
         },
         {
           label: 'Total ideas (Unaccepted)',
           count: countUnaccepted,
-          icon: '🌓'
+          icon: '🌓',
         },
         {
           label: 'Total ideas (Anonymously)',
           count: countAnonymously,
-          icon: '🌔'
+          icon: '🌔',
         },
         {
           label: 'Total ideas (no Anonymously)',
           count: countNoAnonymously,
-          icon: '🌕'
+          icon: '🌕',
         },
         {
           label: 'Total view',
           count: totalView,
-          icon: '🌖'
+          icon: '🌖',
         },
         {
           label: 'Total interaction',
           count: countInteraction,
-          icon: '🌗'
+          icon: '🌗',
         },
-      ]
-    })
-
-  })
+      ],
+    });
+  }),
 };
-
 
 module.exports = userController;
