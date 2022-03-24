@@ -139,7 +139,7 @@ const userController = {
       .limit(1)
       .then((users) => users);
 
-    let maxEmployeeId = maxQuery[0] ? maxQuery[0].employee_id : 0;
+    let maxEmployeeId = maxQuery[0] ? maxQuery[0].employee_id + 1 : 1;
 
     for (let index = 0; index < users.length; index++) {
       const userItem = users[index];
