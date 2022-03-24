@@ -57,7 +57,7 @@ const userController = {
       .limit(1)
       .then((users) => users);
 
-    const employee_id = maxQuery[0] ? maxQuery[0].employee_id : 0;
+    const employee_id = maxQuery[0] ? maxQuery[0].employee_id + 1 : 1;
 
     //Check exist department id
     if (department_id) {
@@ -139,7 +139,7 @@ const userController = {
       .limit(1)
       .then((users) => users);
 
-    let employee_id = maxQuery[0] ? maxQuery[0].employee_id + 1 : 1;
+    let maxEmployeeId = maxQuery[0] ? maxQuery[0].employee_id : 0;
 
     for (let index = 0; index < users.length; index++) {
       const userItem = users[index];
@@ -184,7 +184,7 @@ const userController = {
         role: userItem.role,
         password: passwordHash,
         avatar: avatarUser,
-        employee_id: employee_id++,
+        employee_id: maxEmployeeId++,
       });
       usersValided.push(newUser);
       userEmails.push(userItem.email);
