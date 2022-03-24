@@ -132,6 +132,15 @@ const userController = {
         err: `Pleas enter full field data from CSV!`,
       });
 
+    //Increment user
+    const maxQuery = await userModel
+      .find({})
+      .sort({ employee_id: -1 })
+      .limit(1)
+      .then((users) => users);
+
+    let employee_id = maxQuery[0] ? maxQuery[0].employee_id + 1 : 1;
+
     for (let index = 0; index < users.length; index++) {
       const userItem = users[index];
 
@@ -169,22 +178,13 @@ const userController = {
         url: `https://avatars.dicebear.com/api/big-smile/${userItem.name}.svg`,
       };
 
-      //Increment user
-      const maxQuery = await userModel
-        .find({})
-        .sort({ employee_id: -1 })
-        .limit(1)
-        .then((users) => users);
-
-      const employee_id = maxQuery[0] ? maxQuery[0].employee_id + 1 : 1;
-
       const newUser = new userModel({
         name: userItem.name,
         email: userItem.email,
         role: userItem.role,
         password: passwordHash,
         avatar: avatarUser,
-        employee_id
+        employee_id: employee_id++,
       });
       usersValided.push(newUser);
       userEmails.push(userItem.email);
