@@ -87,7 +87,7 @@ const authController = {
     //Check time exp of refresh token
     const exp = new Date(result.exp * 1000).toDateString();
     const timeNow = new Date().toDateString();
-    if (exp > timeNow)
+    if (exp < timeNow)
       return res.status(401).json({
         err: 'Please login now!',
         statusCode: 401,
