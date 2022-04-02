@@ -314,6 +314,7 @@ const staticController = {
   //get idea by day
   ideaByDate: catchAsyncError(async (req, res) => {
     const { _date, _limit } = req.query
+    console.log(_date, _limit)
     const allDate = await ideaModel.find({}).sort({ 'createdAt': 1 }).limit(1)
     const time = _date ? _date : allDate[0].createdAt || moment().toISOString()
 
@@ -355,11 +356,16 @@ const staticController = {
       }
     ])
 
+    const new_data = data.filter((value)=> {
+      if(value._id.length == 0) return false
+      return true
+    })
 
-    const _ids = data.map(item => item._id[0]._id)
-    const names = data.map(item => item._id[0].name)
-    const descriptions = data.map(item => item._id[0].description)
-    const count = data.map(item => item.count)
+
+    const _ids = new_data.map(item => item._id[0]._id)
+    const names = new_data.map(item => item._id[0].name)
+    const descriptions = new_data.map(item => item._id[0].description)
+    const count = new_data.map(item => item.count)
     return res.status(200).json({
       data: {
         _ids,
@@ -367,6 +373,7 @@ const staticController = {
         descriptions,
         count
       },
+    
       msg: 'get data success',
       statusCode: 200,
       dateFirst: allDate[0].createdAt
