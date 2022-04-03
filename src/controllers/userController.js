@@ -34,6 +34,7 @@ const userController = {
     //Check email exist in system
     const user = await userModel.findOne({
       email,
+      deleted: false
     });
     if (user)
       return res.status(400).json({
@@ -84,34 +85,80 @@ const userController = {
         }
       }
 
-      //Create and save new user
-      const NewUser = new userModel({
-        employee_id,
-        name,
+      //Check existing user but was soft deleted
+      const userDeleted = await userModel.findOne({
         email,
-        role,
-        password: passwordHash,
-        cf_password,
-        avatar: avatarUser,
-        department_id,
-      });
-      await NewUser.save();
+        deleted: false
+      })
 
-      //update count user department
-      department.count_users = ++department.count_users;
-      await department.save();
+      if (userDeleted) {
+        await userModel.updateOne({
+          _id: userDeleted.id
+        }, {
+          employee_id,
+          name,
+          email,
+          role,
+          password: passwordHash,
+          cf_password,
+          avatar: avatarUser,
+          department_id,
+          deleted: false
+        })
+      } else {
+        //Create and save new user
+        const NewUser = new userModel({
+          employee_id,
+          name,
+          email,
+          role,
+          password: passwordHash,
+          cf_password,
+          avatar: avatarUser,
+          department_id,
+        });
+        await NewUser.save();
+
+        //update count user department
+        department.count_users = ++department.count_users;
+        await department.save();
+      }
     } else {
-      //Create and save new user without department_id
-      const NewUser = new userModel({
-        employee_id,
-        name,
+
+      //Check existing user but was soft deleted
+      const userDeleted = await userModel.findOne({
         email,
-        role,
-        password: passwordHash,
-        cf_password,
-        avatar: avatarUser,
-      });
-      await NewUser.save();
+        deleted: false
+      })
+
+      if (userDeleted) {
+        await userModel.updateOne({
+          _id: userDeleted.id
+        }, {
+          employee_id,
+          name,
+          email,
+          role,
+          password: passwordHash,
+          cf_password,
+          avatar: avatarUser,
+          deleted: false
+        })
+      } else {
+
+        //Create and save new user without department_id
+        const NewUser = new userModel({
+          employee_id,
+          name,
+          email,
+          role,
+          password: passwordHash,
+          cf_password,
+          avatar: avatarUser,
+        });
+        await NewUser.save();
+      }
+
     }
 
     return res.status(200).json({
@@ -581,9 +628,8 @@ const userController = {
       await mailNotice({
         email: user.email,
         subject: `You have been assigned to the department ${department.name}`,
-        text: `You have been assigned to the department ${
-          department.name
-        } at ${new Date().toString()}`,
+        text: `You have been assigned to the department ${department.name
+          } at ${new Date().toString()}`,
         html: '',
       });
 
@@ -645,9 +691,8 @@ const userController = {
         await mailNotice({
           email: user.email,
           subject: `You have been assigned to the department ${department.name}`,
-          text: `You have been assigned to the department ${
-            department.name
-          } at ${new Date().toString()}`,
+          text: `You have been assigned to the department ${department.name
+            } at ${new Date().toString()}`,
           html: '',
         });
       }
