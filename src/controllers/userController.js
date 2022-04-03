@@ -88,10 +88,11 @@ const userController = {
       //Check existing user but was soft deleted
       const userDeleted = await userModel.findOne({
         email,
-        deleted: false
+        deleted: true
       })
 
       if (userDeleted) {
+
         await userModel.updateOne({
           _id: userDeleted.id
         }, {
@@ -128,7 +129,7 @@ const userController = {
       //Check existing user but was soft deleted
       const userDeleted = await userModel.findOne({
         email,
-        deleted: false
+        deleted: true
       })
 
       if (userDeleted) {

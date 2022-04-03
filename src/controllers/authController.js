@@ -30,7 +30,7 @@ const authController = {
       return res.status(400).json({
         err: 'This email does not exists.',
         statusCode: 400,
-      });z
+      });
 
     //Check password correct
     const isMatch = await bcrypt.compare(password, user.password);
