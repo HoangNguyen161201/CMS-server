@@ -123,18 +123,24 @@ const submissionController = {
     // get all submission by field
     const { _page, _search, _time } = req.query;
     let filter = new Filter(submissionModel).getAll();
+    let countSubms = new Filter(submissionModel).getAll();
     if (_search) {
       filter = filter.search({ name: 'name', query: _search });
+      countSubms = countSubms.search({ name: 'name', query: _search });
     }
     if (_time) {
       filter = filter.searchGte({ name: 'closure_date', query: _time });
+      countSubms = countSubms.searchGte({ name: 'closure_date', query: _time });
+
     }
 
     if (_page) {
       filter = filter.pagination({ limit: 8, page: Number(_page) - 1 });
     }
 
-    const page_Index = await pageIndex({ query: submissionModel, limit: 6 });
+    const count = await countSubms.query.count()
+   
+    const page_Index = pageIndex({ count, limit: 8 });
     const submissions = await filter.query;
 
     return res.status(200).json({
