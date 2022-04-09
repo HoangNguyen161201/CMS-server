@@ -99,7 +99,8 @@ const authController = {
         _id: result.id,
         deleted: false,
       })
-      .select('-password');
+      .select('-password').populate('department_id');
+      console.log('sdfsdfsdf')
     if (!user)
       return res.status(400).json({
         err: 'User does not exist.',
