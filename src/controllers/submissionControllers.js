@@ -1,20 +1,21 @@
-const submissionValid = require('../utils/submissionValid');
-const moment = require('moment');
+const submissionValid = require("../utils/submissionValid");
+const moment = require("moment");
 
 //Import middleware
-const catchAsyncError = require('../helpers/catchAsyncError');
+const catchAsyncError = require("../helpers/catchAsyncError");
 
 //Import model
-const submissionModel = require('../models/submissionModel');
-const ideaModel = require('../models/ideaModel');
-const { update } = require('./userController');
-const Filter = require('../utils/filter');
-const pageIndex = require('../utils/PageIndex');
+const submissionModel = require("../models/submissionModel");
+const ideaModel = require("../models/ideaModel");
+const { update } = require("./userController");
+const Filter = require("../utils/filter");
+const pageIndex = require("../utils/PageIndex");
 
 const submissionController = {
   create: catchAsyncError(async (req, res) => {
     //get info submission to create
-    const { name, description, closure_date, final_closure_date, background } = req.body;
+    const { name, description, closure_date, final_closure_date, background } =
+      req.body;
 
     //check valid info input
     const errMsg = submissionValid.submissionFillIn({
@@ -41,7 +42,7 @@ const submissionController = {
     await NewSubmission.save();
 
     return res.status(200).json({
-      msg: 'Create topic success!',
+      msg: "Create topic success!",
       statusCode: 200,
     });
   }),
@@ -50,14 +51,15 @@ const submissionController = {
     //get id from query
     const { id } = req.params;
     //get info update
-    const { name, description, closure_date, final_closure_date, background } = req.body;
+    const { name, description, closure_date, final_closure_date, background } =
+      req.body;
 
     //check topic exist in system
     const submission = await submissionModel.findById(id);
 
     if (!submission) {
       return res.status(400).json({
-        err: ' The Topic does not exist',
+        err: " The Topic does not exist",
         statusCode: 400,
       });
     }
@@ -86,7 +88,7 @@ const submissionController = {
 
     return res.status(200).json({
       statusCode: 200,
-      msg: 'Update Success',
+      msg: "Update Success",
     });
   }),
 
@@ -98,10 +100,9 @@ const submissionController = {
 
     if (!submission)
       return res.status(400).json({
-        err: 'The Topic is does not exist',
+        err: "The Topic is does not exist",
         statusCode: 400,
       });
-    await submissionModel.findByIdAndDelete(id, req.body);
 
     const ideas = await ideaModel.find({
       submission_id: id,
@@ -109,13 +110,15 @@ const submissionController = {
     //check submission have any idea
     if (ideas && ideas.length !== 0)
       return res.status(400).json({
-        err: 'Please delete all idea of this submission',
+        err: "Please delete all idea of this submission",
         statusCode: 400,
       });
 
+    await submissionModel.findByIdAndDelete(id, req.body);
+    
     return res.status(200).json({
       statusCode: 200,
-      msg: 'Delete Success',
+      msg: "Delete Success",
     });
   }),
 
@@ -125,21 +128,20 @@ const submissionController = {
     let filter = new Filter(submissionModel).getAll();
     let countSubms = new Filter(submissionModel).getAll();
     if (_search) {
-      filter = filter.search({ name: 'name', query: _search });
-      countSubms = countSubms.search({ name: 'name', query: _search });
+      filter = filter.search({ name: "name", query: _search });
+      countSubms = countSubms.search({ name: "name", query: _search });
     }
     if (_time) {
-      filter = filter.searchGte({ name: 'closure_date', query: _time });
-      countSubms = countSubms.searchGte({ name: 'closure_date', query: _time });
-
+      filter = filter.searchGte({ name: "closure_date", query: _time });
+      countSubms = countSubms.searchGte({ name: "closure_date", query: _time });
     }
 
     if (_page) {
       filter = filter.pagination({ limit: 8, page: Number(_page) - 1 });
     }
 
-    const count = await countSubms.query.count()
-   
+    const count = await countSubms.query.count();
+
     const page_Index = pageIndex({ count, limit: 8 });
     const submissions = await filter.query;
 
@@ -147,19 +149,19 @@ const submissionController = {
       statusCode: 200,
       submissions,
       page_Index,
-      msg: 'Get all topic success',
+      msg: "Get all topic success",
     });
   }),
 
   getAllId: catchAsyncError(async (req, res) => {
-    console.log('sdf');
+    console.log("sdf");
     const submissions = await submissionModel
       .find({})
-      .select('-description -closure_date -final_closure_date -background');
+      .select("-description -closure_date -final_closure_date -background");
 
     return res.status(200).json({
       statusCode: 200,
-      msg: 'Get all submission success',
+      msg: "Get all submission success",
       submissions,
     });
   }),
@@ -170,12 +172,12 @@ const submissionController = {
 
     if (!submission)
       return res.status(400).json({
-        err: 'The topic does not exist',
+        err: "The topic does not exist",
         statusCode: 400,
       });
     return res.status(200).json({
       statusCode: 200,
-      msg: 'Get topic success',
+      msg: "Get topic success",
       submission,
     });
   }),
