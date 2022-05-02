@@ -108,18 +108,21 @@ const submissionController = {
       submission_id: id,
     });
     //check submission have any idea
-    if (ideas && ideas.length !== 0)
+    if (ideas && ideas.length !== 0) {
+
       return res.status(400).json({
         err: "Please delete all idea of this submission",
         statusCode: 400,
       });
+    } else {
 
-    await submissionModel.findByIdAndDelete(id, req.body);
-    
-    return res.status(200).json({
-      statusCode: 200,
-      msg: "Delete Success",
-    });
+      await submissionModel.findByIdAndDelete(id, req.body);
+      
+      return res.status(200).json({
+        statusCode: 200,
+        msg: "Delete Success",
+      });
+    }
   }),
 
   getAll: catchAsyncError(async (req, res) => {
