@@ -52,7 +52,7 @@ app.use(express.urlencoded());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: 'http://localhost/3000',
+    origin: process.env.URL_CLIENT,
     methods: 'POST, GET, PATCH, PUT, DELETE',
     credentials: true,
   })
