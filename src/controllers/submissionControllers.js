@@ -110,6 +110,7 @@ const submissionController = {
     //check submission have any idea
     if (ideas && ideas.length !== 0) {
 
+      
       return res.status(400).json({
         err: "Please delete all idea of this submission",
         statusCode: 400,
